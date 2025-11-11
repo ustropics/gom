@@ -4,93 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>300+ Image Player</title>
-
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        html,body { height:100%; font-family:system-ui,sans-serif; background:#111; color:#eee; }
-
-        #app { height:100vh; display:flex; flex-direction:column; }
-
-        /* ---------- Navbar ---------- */
-        #navbar {
-            height:100px; background:#1a1a1a; border-bottom:1px solid #333;
-            padding:0 15px; display:flex; flex-direction:column; justify-content:center; gap:8px;
-            flex-shrink:0;
-        }
-        #controls { 
-            display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:0.9rem; 
-        }
-        #controls button { 
-            background:#333; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; 
-        }
-        #controls button:hover { background:#555; }
-        .speed-control,.loop-control { display:flex; align-items:center; gap:6px; }
-        #speed { width:80px; }
-        #counter { margin-left:auto; opacity:0.8; }
-
-        /* ---------- Interactive Progress Slider ---------- */
-        #progress-wrapper {
-            position: relative;
-            height: 36px;
-            margin-top: 8px;
-            cursor: pointer;
-        }
-        #progress-slider {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            opacity: 0;
-            cursor: pointer;
-            z-index: 2;
-        }
-        #progress-track {
-            position: absolute;
-            inset: 0;
-            height: 6px;
-            background: #333;
-            border-radius: 3px;
-            overflow: hidden;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        #progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #4a9eff;
-            transition: width .1s linear;
-        }
-        #progress-thumb {
-            position: absolute;
-            top: 50%;
-            left: 0%;
-            width: 16px;
-            height: 16px;
-            background: #4a9eff;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: left .1s linear;
-            pointer-events: none;
-            box-shadow: 0 0 8px rgba(74,158,255,.6);
-        }
-
-        /* ---------- Main Image Area ---------- */
-        #main-container {
-            flex:1; display:flex; justify-content:center; align-items:center;
-            background:#000; padding:20px;
-        }
-        #current-slide {
-            max-width:100%; max-height:100%; object-fit:contain;
-            border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,.5);
-        }
-
-        #play-pause::after { content:"Play"; }
-        #play-pause.playing::after { content:"Pause"; }
-
-        .status { 
-            position:fixed; bottom:10px; right:10px; background:#0008; 
-            padding:6px 12px; border-radius:6px; font-size:0.8rem; z-index:10; 
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div id="app">
@@ -98,13 +12,10 @@
         <!-- Navbar -->
         <header id="navbar">
             <div id="controls">
+                <!-- LEFT: Player Controls -->
                 <button id="play-pause">Play</button>
                 <button id="prev">Prev</button>
                 <button id="next">Next</button>
-
-                <div id="counter">
-                    <span id="current-num">1</span> / <span id="image-count">0</span>
-                </div>
 
                 <label class="speed-control">
                     Speed:
@@ -114,9 +25,25 @@
                 <label class="loop-control">
                     Loop <input type="checkbox" id="loop" checked>
                 </label>
+
+                <!-- Counter -->
+                <div id="counter">
+                    <span id="current-num">0</span> / <span id="image-count">0</span>
+                </div>
+
+                <!-- RIGHT: Dynamic Filters + About -->
+                <div id="right-controls">
+                    <select id="year-filter">
+                        <option value="">Select Year</option>
+                    </select>
+                    <select id="product-filter" disabled>
+                        <option value="">Select Product</option>
+                    </select>
+                    <button id="about-btn" title="About">i</button>
+                </div>
             </div>
 
-            <!-- Interactive Progress Bar -->
+            <!-- Interactive Progress -->
             <div id="progress-wrapper">
                 <input type="range" id="progress-slider" min="0" max="0" value="0" step="1">
                 <div id="progress-track">
@@ -132,116 +59,23 @@
         </main>
     </div>
 
-    <div class="status" id="status">Loading images...</div>
+    <!-- About Panel -->
+    <div id="about-panel">
+        <button id="close-about">X</button>
+        <h2>About This Player</h2>
+        <p><strong>300+ Image Viewer</strong></p>
+        <p>High-performance slideshow with dynamic catalog loading, keyboard navigation, and speed control.</p>
+        <p><strong>Controls:</strong></p>
+        <ul>
+            <li>Right Arrow Next | Left Arrow Prev</li>
+            <li>Space Play / Pause</li>
+            <li>Drag slider to scrub</li>
+        </ul>
+        <p>Data driven by <code>catalog.json</code>.</p>
+    </div>
 
-    <script>
-        // === CONFIG ===
-        const IMAGES_URL = 'static/json/images.json';
+    <div class="status" id="status">Loading catalog...</div>
 
-        // === STATE ===
-        let images = [];
-        let current = 0;
-        let playing = false;
-        let speed = 1;
-        let timer = null;
-
-        // === DOM ===
-        const els = {
-            slide:   document.getElementById('current-slide'),
-            progress:document.getElementById('progress-fill'),
-            thumb:   document.getElementById('progress-thumb'),
-            slider:  document.getElementById('progress-slider'),
-            status:  document.getElementById('status'),
-            count:   document.getElementById('image-count'),
-            curNum:  document.getElementById('current-num')
-        };
-
-        // === PLAYER ===
-        function show(idx) {
-            current = (idx + images.length) % images.length;
-            els.slide.src = images[current].src;
-            els.curNum.textContent = current + 1;
-            updateProgress();
-        }
-        function next() { show(current + 1); if (playing) restart(); }
-        function prev() { show(current - 1); if (playing) restart(); }
-
-        function toggle() { playing ? pause() : play(); }
-        function play() {
-            if (images.length < 2) return;
-            playing = true;
-            document.getElementById('play-pause').classList.add('playing');
-            start();
-        }
-        function pause() {
-            playing = false;
-            document.getElementById('play-pause').classList.remove('playing');
-            clearInterval(timer);
-        }
-        function start() {
-            clearInterval(timer);
-            const delay = 1000 / speed;
-            timer = setInterval(() => {
-                if (!document.getElementById('loop').checked && current === images.length - 1) {
-                    pause(); return;
-                }
-                next();
-            }, delay);
-        }
-        function restart() { if (playing) start(); }
-
-        function updateProgress() {
-            if (images.length <= 1) return;
-            const pct = (current / (images.length - 1)) * 100;
-            els.progress.style.width = pct + '%';
-            els.thumb.style.left = pct + '%';
-            els.slider.value = current;
-        }
-
-        // === INIT ===
-        async function loadImages() {
-            try {
-                const res = await fetch(IMAGES_URL);
-                if (!res.ok) throw new Error(res.status);
-                images = await res.json();
-                els.count.textContent = images.length;
-                els.slider.max = images.length - 1;
-                els.status.textContent = `Loaded ${images.length} images`;
-                show(0);
-            } catch (e) {
-                els.status.textContent = 'Failed to load images.json';
-                console.error(e);
-            }
-        }
-
-        // === EVENTS ===
-        document.getElementById('play-pause').onclick = toggle;
-        document.getElementById('prev').onclick = prev;
-        document.getElementById('next').onclick = next;
-        document.getElementById('speed').oninput = (e) => {
-            speed = parseFloat(e.target.value);
-            document.getElementById('speed-value').textContent = speed.toFixed(1) + 'x';
-            if (playing) start();
-        };
-
-        // Interactive slider
-        els.slider.addEventListener('input', (e) => {
-            const idx = parseInt(e.target.value, 10);
-            show(idx);
-            if (playing) restart();
-        });
-
-        // Keyboard: Arrows + Space
-        document.addEventListener('keydown', (e) => {
-            if (document.activeElement.tagName === 'INPUT') return;
-
-            if (e.key === 'ArrowLeft')  { e.preventDefault(); prev(); }
-            if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
-            if (e.key === ' ')          { e.preventDefault(); toggle(); }
-        });
-
-        // === START ===
-        window.onload = loadImages;
-    </script>
+    <script src="js/app.js"></script>
 </body>
 </html>
