@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gulf of Mexico Viewer</title>
+    <title>300+ Image Player</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,6 +12,7 @@
         <!-- Navbar -->
         <header id="navbar">
             <div id="controls">
+                <!-- LEFT: Player Controls -->
                 <button id="play-pause">Play</button>
                 <button id="prev">Prev</button>
                 <button id="next">Next</button>
@@ -25,10 +26,12 @@
                     Loop <input type="checkbox" id="loop" checked>
                 </label>
 
+                <!-- Counter -->
                 <div id="counter">
                     <span id="current-num">0</span> / <span id="image-count">0</span>
                 </div>
 
+                <!-- RIGHT: Dynamic Filters + About -->
                 <div id="right-controls">
                     <select id="year-filter">
                         <option value="">Select Year</option>
@@ -40,6 +43,7 @@
                 </div>
             </div>
 
+            <!-- Interactive Progress -->
             <div id="progress-wrapper">
                 <input type="range" id="progress-slider" min="0" max="0" value="0" step="1">
                 <div id="progress-track">
@@ -49,48 +53,25 @@
             </div>
         </header>
 
-        <!-- Main Image Container -->
+        <!-- Main Image -->
         <main id="main-container">
-            <!-- 2-Column Placeholder -->
-            <div id="placeholder" class="placeholder-grid">
-                <div class="col-left">
-                    <img src="images/gulf_bathymetry.webp" alt="Gulf Bathymetry" class="bathymetry-img">
-                    <div class="bathymetry-text">
-                        <p>The Gulf of Mexico features a broad continental shelf in the north, steep slopes along the Sigsbee Escarpment, and deep basins exceeding 3,700 meters in the central region.</p>
-                        <p>Seafloor topography drives circulation patterns, including the Loop Current and eddy formation, influencing nutrient upwelling and biological productivity.</p>
-                       
-                    </div>
-                </div>
-                <div class="col-right">
-                    <div class="example-card">
-                        <img src="images/ssh_example.webp" alt="SSH Example" class="example-img">
-                        <p><strong>Sea Surface Height (SSH)</strong><br>Tracks mesoscale eddies and current paths</p>
-                    </div>
-                    <div class="example-card">
-                        <img src="images/salinity_example.webp" alt="Salinity Example" class="example-img">
-                        <p><strong>Surface Salinity</strong><br>Reveals freshwater plumes and mixing zones</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Real image (hidden until loaded) -->
-            <img id="current-slide" src="" alt="Current slide" style="display:none;">
+            <img id="current-slide" src="" alt="Current slide">
         </main>
     </div>
 
     <!-- About Panel -->
     <div id="about-panel">
         <button id="close-about">X</button>
-        <h2>About This Viewer</h2>
-        <p><strong>Gulf of Mexico Ocean Dynamics</strong></p>
-        <p>Interactive time-series viewer for HYCOM model output including salinity, SSH, currents, and transport.</p>
+        <h2>About This Player</h2>
+        <p><strong>300+ Image Viewer</strong></p>
+        <p>High-performance slideshow with dynamic catalog loading, keyboard navigation, and speed control.</p>
         <p><strong>Controls:</strong></p>
         <ul>
             <li>Right Arrow Next | Left Arrow Prev</li>
             <li>Space Play / Pause</li>
             <li>Drag slider to scrub</li>
         </ul>
-        <p>Data: US Tropics Consortium</p>
+        <p>Data driven by <code>catalog.json</code>.</p>
     </div>
 
     <div class="status" id="status">Loading catalog...</div>

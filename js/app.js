@@ -1,11 +1,10 @@
 // === CONFIG ===
-const CATALOG_URL = 'json/catalog.json';   // <-- changed from static/json
-const IMAGES_BASE = 'json';                // <-- changed from static/json
+const CATALOG_URL = 'json/catalog.json';
+const IMAGES_BASE = 'json';
 
 // === STATE ===
 let catalog = {};
 let images = [];
-let filtered = [];
 let current = 0;
 let playing = false;
 let speed = 1;
@@ -24,10 +23,11 @@ const els = {
     product: document.getElementById('product-filter'),
     about:   document.getElementById('about-panel'),
     aboutBtn: document.getElementById('about-btn'),
-    closeAbout: document.getElementById('close-about')
+    closeAbout: document.getElementById('close-about'),
+    placeholder: document.getElementById('placeholder')
 };
 
-// === BUILD DROPDOWNS FROM CATALOG ===
+// === LOAD CATALOG ===
 async function loadCatalog() {
     try {
         const res = await fetch(CATALOG_URL);
@@ -43,14 +43,14 @@ async function loadCatalog() {
             els.year.appendChild(opt);
         });
 
-        els.status.textContent = 'Catalog loaded. Select Year.';
+        els.status.textContent = 'Select Year and Product';
     } catch (err) {
         console.error(err);
         els.status.textContent = 'Failed to load catalog';
     }
 }
 
-// Update Product dropdown when Year changes
+// Year → Product
 els.year.onchange = () => {
     const year = els.year.value;
     els.product.innerHTML = '<option value="">Select Product</option>';
@@ -67,14 +67,14 @@ els.year.onchange = () => {
     resetPlayer();
 };
 
-// === LOAD IMAGES FOR SELECTED PRODUCT ===
+// Product → Load Images
 els.product.onchange = async () => {
     const year = els.year.value;
     const product = els.product.value;
     if (!year || !product) return;
 
     const filename = catalog[year][product];
-    const url = `${IMAGES_BASE}/${filename}`;   // <-- uses new path
+    const url = `${IMAGES_BASE}/${filename}`;
 
     try {
         els.status.textContent = `Loading ${filename}...`;
@@ -82,54 +82,51 @@ els.product.onchange = async () => {
         if (!res.ok) throw new Error(`File not found: ${filename}`);
 
         images = await res.json();
-        if (!Array.isArray(images) || images.length === 0) {
-            throw new Error('No images in file');
-        }
+        if (!Array.isArray(images) || images.length === 0) throw new Error('No images');
 
-        filtered = images;
-        applyFilters();
+        // Switch to real image
+        els.placeholder.style.display = 'none';
+        els.slide.style.display = 'block';
+
+        current = 0;
+        updateSliderMax();
+        show(0);
+        els.count.textContent = images.length;
         els.status.textContent = `Loaded ${images.length} images`;
     } catch (err) {
         console.warn(err);
         resetPlayer();
-        els.status.textContent = `No images for ${product}`;
+        els.status.textContent = `No data for ${product}`;
     }
 };
 
-// === PLAYER LOGIC ===
+// === PLAYER ===
 function resetPlayer() {
     images = [];
-    filtered = [];
     current = 0;
     pause();
     els.slide.src = '';
+    els.slide.style.display = 'none';
+    els.placeholder.style.display = 'flex';
     els.curNum.textContent = '0';
     els.count.textContent = '0';
     updateProgress();
     updateSliderMax();
 }
 
-function applyFilters() {
-    current = 0;
-    updateSliderMax();
-    show(0);
-    els.count.textContent = filtered.length;
-}
-
 function show(idx) {
-    if (filtered.length === 0) return;
-    current = idx % filtered.length;
-    els.slide.src = filtered[current].src;
+    if (images.length === 0) return;
+    current = idx % images.length;
+    els.slide.src = images[current].src;
     els.curNum.textContent = current + 1;
     updateProgress();
 }
-
 function next() { show(current + 1); if (playing) restart(); }
 function prev() { show(current - 1); if (playing) restart(); }
 
 function toggle() { playing ? pause() : play(); }
 function play() {
-    if (filtered.length < 2) return;
+    if (images.length < 2) return;
     playing = true;
     document.getElementById('play-pause').classList.add('playing');
     start();
@@ -143,7 +140,7 @@ function start() {
     clearInterval(timer);
     const delay = 1000 / speed;
     timer = setInterval(() => {
-        if (!document.getElementById('loop').checked && current === filtered.length - 1) {
+        if (!document.getElementById('loop').checked && current === images.length - 1) {
             pause(); return;
         }
         next();
@@ -152,18 +149,18 @@ function start() {
 function restart() { if (playing) start(); }
 
 function updateProgress() {
-    if (filtered.length <= 1) {
+    if (images.length <= 1) {
         els.progress.style.width = '0%';
         els.thumb.style.left = '0%';
         return;
     }
-    const pct = (current / (filtered.length - 1)) * 100;
+    const pct = (current / (images.length - 1)) * 100;
     els.progress.style.width = pct + '%';
     els.thumb.style.left = pct + '%';
     els.slider.value = current;
 }
 function updateSliderMax() {
-    els.slider.max = Math.max(0, filtered.length - 1);
+    els.slider.max = Math.max(0, images.length - 1);
 }
 
 // === EVENTS ===
@@ -182,7 +179,7 @@ els.slider.addEventListener('input', (e) => {
     if (playing) restart();
 });
 
-// About Panel
+// About
 els.aboutBtn.onclick = () => els.about.classList.add('open');
 els.closeAbout.onclick = () => els.about.classList.remove('open');
 document.addEventListener('click', (e) => {
