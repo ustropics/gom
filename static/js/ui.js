@@ -5,6 +5,7 @@ const UI = {
         this.cache();
         this.renderThumbnails();
         this.bindSpeed();
+        this.initMobileToggle();
     },
 
     cache() {
@@ -13,7 +14,9 @@ const UI = {
             progress: document.getElementById('progress-fill'),
             speed: document.getElementById('speed'),
             speedVal: document.getElementById('speed-value'),
-            img: document.getElementById('current-slide')
+            img: document.getElementById('current-slide'),
+            sidebar: document.getElementById('sidebar'),
+            toggle: document.getElementById('sidebar-toggle')
         };
     },
 
@@ -30,6 +33,11 @@ const UI = {
         });
         this.els.thumbs.innerHTML = '';
         this.els.thumbs.appendChild(frag);
+
+        if (window.innerWidth < 768 && images.length > 0) {
+            this.els.sidebar.classList.add('open');
+            if (this.els.toggle) this.els.toggle.textContent = 'X';
+        }
     },
 
     updateProgress(idx, total) {
@@ -53,5 +61,17 @@ const UI = {
             this.els.speedVal.textContent = `${s}x`;
             Player.setSpeed(s);
         });
+    },
+
+    initMobileToggle() {
+        if (!this.els.toggle || !this.els.sidebar) return;
+        this.els.toggle.addEventListener('click', () => {
+            this.els.sidebar.classList.toggle('open');
+            const isOpen = this.els.sidebar.classList.contains('open');
+            this.els.toggle.textContent = isOpen ? 'X' : 'Menu';
+        });
+        if (this.els.sidebar.classList.contains('open')) {
+            this.els.toggle.textContent = 'X';
+        }
     }
 };
