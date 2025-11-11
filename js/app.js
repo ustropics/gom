@@ -9,6 +9,7 @@ let current = 0;
 let playing = false;
 let speed = 1;
 let timer = null;
+let preservedIndex = 0;  // ← NEW: Track last position across products
 
 // === DOM ===
 const els = {
@@ -64,10 +65,11 @@ els.year.onchange = () => {
             els.product.appendChild(opt);
         });
     }
+    preservedIndex = 0;  // ← Reset position when year changes
     resetPlayer();
 };
 
-// Product → Load Images
+// Product → Load Images (PRESERVE POSITION)
 els.product.onchange = async () => {
     const year = els.year.value;
     const product = els.product.value;
@@ -88,13 +90,15 @@ els.product.onchange = async () => {
         els.placeholder.style.display = 'none';
         els.slide.style.display = 'block';
 
-        current = 0;
+        // ← NEW: Preserve position (clamp to new length)
+        current = Math.min(preservedIndex, images.length - 1);
         updateSliderMax();
-        show(0);
+        show(current);  // Show preserved index
         els.count.textContent = images.length;
         els.status.textContent = `Loaded ${images.length} images`;
     } catch (err) {
         console.warn(err);
+        preservedIndex = 0;  // ← Reset on error
         resetPlayer();
         els.status.textContent = `No data for ${product}`;
     }
@@ -107,7 +111,7 @@ function resetPlayer() {
     pause();
     els.slide.src = '';
     els.slide.style.display = 'none';
-    els.placeholder.style.display = 'flex';
+    els.placeholder.style.display = 'grid';
     els.curNum.textContent = '0';
     els.count.textContent = '0';
     updateProgress();
@@ -117,6 +121,7 @@ function resetPlayer() {
 function show(idx) {
     if (images.length === 0) return;
     current = idx % images.length;
+    preservedIndex = current;  // ← NEW: Save position for next product
     els.slide.src = images[current].src;
     els.curNum.textContent = current + 1;
     updateProgress();
@@ -175,7 +180,7 @@ document.getElementById('speed').oninput = (e) => {
 
 els.slider.addEventListener('input', (e) => {
     const idx = parseInt(e.target.value, 10);
-    show(idx);
+    show(idx);  // ← Saves via show()
     if (playing) restart();
 });
 

@@ -51,24 +51,37 @@
 
         <!-- Main Image Container -->
         <main id="main-container">
-            <!-- 2-Column Placeholder -->
+            <!-- 2-Column Placeholder: 60% Left | 40% Right (2x3 Grid) -->
             <div id="placeholder" class="placeholder-grid">
                 <div class="col-left">
                     <img src="images/gulf_bathymetry.webp" alt="Gulf Bathymetry" class="bathymetry-img">
-                    <div class="bathymetry-text">
-                        <p>The Gulf of Mexico features a broad continental shelf in the north, steep slopes along the Sigsbee Escarpment, and deep basins exceeding 3,700 meters in the central region.</p>
-                        <p>Seafloor topography drives circulation patterns, including the Loop Current and eddy formation, influencing nutrient upwelling and biological productivity.</p>
-                       
-                    </div>
                 </div>
                 <div class="col-right">
-                    <div class="example-card">
-                        <img src="images/ssh_example.webp" alt="SSH Example" class="example-img">
-                        <p><strong>Sea Surface Height (SSH)</strong><br>Tracks mesoscale eddies and current paths</p>
-                    </div>
-                    <div class="example-card">
-                        <img src="images/salinity_example.webp" alt="Salinity Example" class="example-img">
-                        <p><strong>Surface Salinity</strong><br>Reveals freshwater plumes and mixing zones</p>
+                    <div class="example-grid">
+                        <div class="example-card">
+                            <img src="images/ssh_example.webp" alt="SSH" class="example-img">
+                            <p><strong>Sea Surface Height</strong><br>Mesoscale eddies & currents</p>
+                        </div>
+                        <div class="example-card">
+                            <img src="images/salinity_example.webp" alt="Salinity" class="example-img">
+                            <p><strong>Surface Salinity</strong><br>Freshwater plumes & mixing</p>
+                        </div>
+                        <div class="example-card">
+                            <img src="images/temperature_example.webp" alt="Temperature" class="example-img">
+                            <p><strong>Sea Surface Temp</strong><br>Thermal fronts & upwelling</p>
+                        </div>
+                        <div class="example-card">
+                            <img src="images/cross_section_example.webp" alt="Cross-Section" class="example-img">
+                            <p><strong>Depth Cross-Section</strong><br>Vertical structure</p>
+                        </div>
+                        <div class="example-card">
+                            <img src="images/line_plot_example.webp" alt="Line Plots" class="example-img">
+                            <p><strong>Depth-Transposed Lines</strong><br>Time-depth profiles</p>
+                        </div>
+                        <div class="example-card">
+                            <img src="images/overlay_example.webp" alt="Overlay" class="example-img">
+                            <p><strong>Salinity + SSH</strong><br>Combined dynamics</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -83,7 +96,7 @@
         <button id="close-about">X</button>
         <h2>About This Viewer</h2>
         <p><strong>Gulf of Mexico Ocean Dynamics</strong></p>
-        <p>Interactive time-series viewer for HYCOM model output including salinity, SSH, currents, and transport.</p>
+        <p>Interactive time-series viewer for HYCOM model output including salinity, SSH, temperature, currents, and more.</p>
         <p><strong>Controls:</strong></p>
         <ul>
             <li>Right Arrow Next | Left Arrow Prev</li>
