@@ -119,23 +119,7 @@ function applyFilters() {
 function show(idx) {
     if (filtered.length === 0) return;
     current = idx % filtered.length;
-
-    const img = els.slide;
-    img.src = filtered[current].src;
-
-    // Force reflow to ensure object-fit works immediately
-    img.onload = () => {
-        if (img.naturalWidth > 1920) {
-        img.src = img.src + '?width=1920'; // if using a resizer
-    }
-
-        img.style.opacity = '0';
-        requestAnimationFrame(() => {
-            img.style.opacity = '1';
-            img.style.transition = 'opacity 0.2s ease';
-        });
-    };
-
+    els.slide.src = filtered[current].src;
     els.curNum.textContent = current + 1;
     updateProgress();
 }
