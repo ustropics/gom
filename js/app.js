@@ -1,6 +1,6 @@
 // === CONFIG ===
-const CATALOG_URL = 'static/json/catalog.json';
-const IMAGES_BASE = 'static/json';
+const CATALOG_URL = 'json/catalog.json';   // <-- changed from static/json
+const IMAGES_BASE = 'json';                // <-- changed from static/json
 
 // === STATE ===
 let catalog = {};
@@ -74,7 +74,7 @@ els.product.onchange = async () => {
     if (!year || !product) return;
 
     const filename = catalog[year][product];
-    const url = `${IMAGES_BASE}/${filename}`;
+    const url = `${IMAGES_BASE}/${filename}`;   // <-- uses new path
 
     try {
         els.status.textContent = `Loading ${filename}...`;
@@ -119,10 +119,27 @@ function applyFilters() {
 function show(idx) {
     if (filtered.length === 0) return;
     current = idx % filtered.length;
-    els.slide.src = filtered[current].src;
+
+    const img = els.slide;
+    img.src = filtered[current].src;
+
+    // Force reflow to ensure object-fit works immediately
+    img.onload = () => {
+        if (img.naturalWidth > 1920) {
+        img.src = img.src + '?width=1920'; // if using a resizer
+    }
+
+        img.style.opacity = '0';
+        requestAnimationFrame(() => {
+            img.style.opacity = '1';
+            img.style.transition = 'opacity 0.2s ease';
+        });
+    };
+
     els.curNum.textContent = current + 1;
     updateProgress();
 }
+
 function next() { show(current + 1); if (playing) restart(); }
 function prev() { show(current - 1); if (playing) restart(); }
 
