@@ -26,8 +26,52 @@
         #controls button:hover { background:#555; }
         .speed-control,.loop-control { display:flex; align-items:center; gap:6px; }
         #speed { width:80px; }
-        #progress-bar { height:4px; background:#333; border-radius:2px; overflow:hidden; }
-        #progress-fill { height:100%; width:0%; background:#4a9eff; transition:width .1s linear; }
+        #counter { margin-left:auto; opacity:0.8; }
+
+        /* ---------- Interactive Progress Slider ---------- */
+        #progress-wrapper {
+            position: relative;
+            height: 36px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+        #progress-slider {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 2;
+        }
+        #progress-track {
+            position: absolute;
+            inset: 0;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        #progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #4a9eff;
+            transition: width .1s linear;
+        }
+        #progress-thumb {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            width: 16px;
+            height: 16px;
+            background: #4a9eff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: left .1s linear;
+            pointer-events: none;
+            box-shadow: 0 0 8px rgba(74,158,255,.6);
+        }
 
         /* ---------- Main Image Area ---------- */
         #main-container {
@@ -46,9 +90,6 @@
             position:fixed; bottom:10px; right:10px; background:#0008; 
             padding:6px 12px; border-radius:6px; font-size:0.8rem; z-index:10; 
         }
-
-        /* Counter in navbar */
-        #counter { margin-left:auto; opacity:0.8; }
     </style>
 </head>
 <body>
@@ -67,14 +108,22 @@
 
                 <label class="speed-control">
                     Speed:
-                    <input type="range" id="speed" min="0.1" max="10" step="0.1" value="1">
+                    <input type="range" id="speed" min="0.1" max="5" step="0.1" value="1">
                     <span id="speed-value">1x</span>
                 </label>
                 <label class="loop-control">
                     Loop <input type="checkbox" id="loop" checked>
                 </label>
             </div>
-            <div id="progress-bar"><div id="progress-fill"></div></div>
+
+            <!-- Interactive Progress Bar -->
+            <div id="progress-wrapper">
+                <input type="range" id="progress-slider" min="0" max="0" value="0" step="1">
+                <div id="progress-track">
+                    <div id="progress-fill"></div>
+                    <div id="progress-thumb"></div>
+                </div>
+            </div>
         </header>
 
         <!-- Main Image -->
@@ -100,6 +149,8 @@
         const els = {
             slide:   document.getElementById('current-slide'),
             progress:document.getElementById('progress-fill'),
+            thumb:   document.getElementById('progress-thumb'),
+            slider:  document.getElementById('progress-slider'),
             status:  document.getElementById('status'),
             count:   document.getElementById('image-count'),
             curNum:  document.getElementById('current-num')
@@ -109,7 +160,7 @@
         function show(idx) {
             current = (idx + images.length) % images.length;
             els.slide.src = images[current].src;
-            els.curNum.textContent = current + 1;          // 1-based
+            els.curNum.textContent = current + 1;
             updateProgress();
         }
         function next() { show(current + 1); if (playing) restart(); }
@@ -140,8 +191,11 @@
         function restart() { if (playing) start(); }
 
         function updateProgress() {
-            const pct = images.length > 1 ? (current / (images.length - 1)) * 100 : 0;
+            if (images.length <= 1) return;
+            const pct = (current / (images.length - 1)) * 100;
             els.progress.style.width = pct + '%';
+            els.thumb.style.left = pct + '%';
+            els.slider.value = current;
         }
 
         // === INIT ===
@@ -151,6 +205,7 @@
                 if (!res.ok) throw new Error(res.status);
                 images = await res.json();
                 els.count.textContent = images.length;
+                els.slider.max = images.length - 1;
                 els.status.textContent = `Loaded ${images.length} images`;
                 show(0);
             } catch (e) {
@@ -169,27 +224,24 @@
             if (playing) start();
         };
 
-        // === START ===
-        window.onload = loadImages;
+        // Interactive slider
+        els.slider.addEventListener('input', (e) => {
+            const idx = parseInt(e.target.value, 10);
+            show(idx);
+            if (playing) restart();
+        });
 
-        // === EVENTS ===
-        document.getElementById('play-pause').onclick = toggle;
-        document.getElementById('prev').onclick = prev;
-        document.getElementById('next').onclick = next;
-        document.getElementById('speed').oninput = (e) => {
-            speed = parseFloat(e.target.value);
-            document.getElementById('speed-value').textContent = speed.toFixed(1) + 'x';
-            if (playing) start();
-        };
-
-        // ---- KEYBOARD CONTROLS ----
+        // Keyboard: Arrows + Space
         document.addEventListener('keydown', (e) => {
-            if (document.activeElement.tagName === 'INPUT') return;   // ignore slider
+            if (document.activeElement.tagName === 'INPUT') return;
 
             if (e.key === 'ArrowLeft')  { e.preventDefault(); prev(); }
             if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
-            if (e.key === ' ')          { e.preventDefault(); toggle(); }   // Spacebar
+            if (e.key === ' ')          { e.preventDefault(); toggle(); }
         });
+
+        // === START ===
+        window.onload = loadImages;
     </script>
 </body>
 </html>
