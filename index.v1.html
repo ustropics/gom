@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Player – DEBUG</title>
+
+    <link rel="stylesheet" href="static/css/main.css">
+    <link rel="stylesheet" href="static/css/sidebar.css">
+    <link rel="stylesheet" href="static/css/player.css">
+</head>
+<body>
+    <div id="app">
+        <include-html src="components/navbar.html"></include-html>
+
+        <div id="main-container">
+            <include-html src="components/sidebar.html"></include-html>
+            <include-html src="components/player.html"></include-html>
+        </div>
+    </div>
+
+    <!-- 1. include.js -->
+    <script src="include.js"></script>
+
+    <!-- 2. Wait for components -->
+    <script>
+        console.log('[index] Waiting for componentsLoaded...');
+        document.addEventListener('componentsLoaded', () => {
+            console.log('[index] componentsLoaded – initializing UI & Player');
+            try {
+                UI.init();        // ← MUST RUN FIRST
+                setTimeout(() => Player.init(), 100);  // ← Wait for DOM
+            } catch (e) {
+                console.error('[index] Init error:', e);
+                showPageError('Init failed – see console');
+            }
+        });
+    </script>
+
+    <!-- 3. Load UI & Player -->
+    <script src="static/js/ui.js"></script>
+    <script src="static/js/player.js"></script>
+
+    <!-- 4. Final check -->
+    <script>
+        console.log('[index] All scripts loaded');
+        function showPageError(msg) {
+            const div = document.createElement('div');
+            div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#b00;color:#fff;padding:20px;text-align:center;z-index:9999;font-size:1.2rem;';
+            div.textContent = 'ERROR: ' + msg;
+            document.body.appendChild(div);
+        }
+    </script>
+</body>
+</html>

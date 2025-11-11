@@ -1,2 +1,2 @@
-#play-pause::after { content: "Play"; }
-#play-pause.playing::after { content: "Pause"; }
+#play-pause::after { content:"Play"; }
+#play-pause.playing::after { content:"Pause"; }

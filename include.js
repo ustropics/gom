@@ -1,26 +1,35 @@
-// include.js
+console.log('[include.js] loaded');
+
 document.addEventListener('DOMContentLoaded', () => {
-    const includes = document.querySelectorAll('include-html');
+    console.log('[include.js] DOM ready – scanning <include-html>');
+    const els = document.querySelectorAll('include-html');
     let loaded = 0;
 
-    if (!includes.length) {
+    if (!els.length) {
+        console.log('[include.js] No components – dispatching componentsLoaded');
         dispatchEvent(new Event('componentsLoaded'));
         return;
     }
 
-    includes.forEach(el => {
+    els.forEach(el => {
         const src = el.getAttribute('src');
+        console.log(`[include.js] fetching ${src}`);
         fetch(src)
-            .then(r => r.text())
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                return r.text();
+            })
             .then(html => {
+                console.log(`[include.js] ${src} → OK`);
                 el.outerHTML = html;
-                if (++loaded === includes.length) {
+                if (++loaded === els.length) {
+                    console.log('[include.js] ALL components loaded – dispatching componentsLoaded');
                     dispatchEvent(new Event('componentsLoaded'));
                 }
             })
             .catch(err => {
-                console.error(`Failed to load ${src}`, err);
-                el.outerHTML = `<div style="color:red">Error: ${src}</div>`;
+                console.error(`[include.js] ${src} FAILED`, err);
+                el.outerHTML = `<div style="color:red;padding:10px;">ERROR: ${src}</div>`;
             });
     });
 });
