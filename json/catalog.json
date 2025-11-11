@@ -1,7 +1,8 @@
 {
   "2024": {
     "Depth Averaged Salin (bands with xsec)": "salin_combined_2024.json",
-    "Depth Averaged Salin": "salin_transport_bands_2024.json"
+    "Depth Averaged Salin": "salin_transport_bands_2024.json",
+    "Depther Averaged Salin (cross-sections)": "salin_transport_line_2024.json"
   },
   "2023": {
     "Alpha": "2023_Alpha.json"
