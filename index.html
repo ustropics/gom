@@ -170,7 +170,13 @@
         };
 
         // === START ===
-        window.onload = loadImages;
+        window.onload = loadImages;document.addEventListener('keydown', (e) => {
+        // Ignore if a text input is focused
+        if (document.activeElement.tagName === 'INPUT') return;
+
+        if (e.key === 'ArrowLeft')  { e.preventDefault(); prev(); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+});
     </script>
 </body>
 </html>
