@@ -20,7 +20,7 @@ html, body, #app, #main-container {
     height:80px;
     background:#1a1a1a;
     border-bottom:1px solid #333;
-    padding:0 12px;
+    padding: 20 12px;
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -99,7 +99,7 @@ select {
 #progress-track {
     position: absolute; 
     inset: 0; 
-    height: 6px; 
+    height: 12px; 
     background: #333; 
     border-radius: 3px; 
     overflow: hidden;
