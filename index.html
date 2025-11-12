@@ -36,6 +36,12 @@
                     <select id="product-filter" disabled>
                         <option value="">Select Product</option>
                     </select>
+
+                    <!-- SECOND PRODUCT SELECTOR -->
+                    <select id="product-filter-2" disabled>
+                        <option value="">Select 2nd Product</option>
+                    </select>
+
                     <button id="about-btn" title="About">i</button>
                 </div>
             </div>
@@ -51,7 +57,7 @@
 
         <!-- Main Image Container -->
         <main id="main-container">
-            <!-- 2-Column Placeholder: 60% Left | 40% Right (2x3 Grid) -->
+            <!-- 2-Column Placeholder -->
             <div id="placeholder" class="placeholder-grid">
                 <div class="col-left">
                     <img src="images/gulf_bathymetry.webp" alt="Gulf Bathymetry" class="bathymetry-img">
@@ -60,33 +66,39 @@
                     <div class="example-grid">
                         <div class="example-card">
                             <img src="images/ssh_example.webp" alt="SSH" class="example-img">
-                            <p><strong>Sea Surface Height</strong><br>Mesoscale eddies & currents</p>
+                            <p><strong>Sea Surface Height</strong><br>Eddies & ocean currents</p>
                         </div>
                         <div class="example-card">
                             <img src="images/salinity_example.webp" alt="Salinity" class="example-img">
-                            <p><strong>Surface Salinity</strong><br>Freshwater plumes & mixing</p>
+                            <p><strong>Depth-Averaged Salinity</strong><br>Freshwater plumes & mixing</p>
                         </div>
                         <div class="example-card">
                             <img src="images/temperature_example.webp" alt="Temperature" class="example-img">
-                            <p><strong>Sea Surface Temp</strong><br>Thermal fronts & upwelling</p>
+                            <p><strong>Depth-Averaged SST</strong><br>Thermal fronts & upwelling</p>
                         </div>
                         <div class="example-card">
                             <img src="images/cross_section_example.webp" alt="Cross-Section" class="example-img">
-                            <p><strong>Depth Cross-Section</strong><br>Vertical structure</p>
+                            <p><strong>Depth Cross-Section</strong><br>Vertical structure & gradients</p>
+                        </div>
+                        <div class="example-card">
+                            <img src="images/mixed_layer_example.webp" alt="Overlay" class="example-img">
+                            <p><strong>Mixed Layer Depth</strong><br>Surface mixing & stratification</p>
                         </div>
                         <div class="example-card">
                             <img src="images/line_plot_example.webp" alt="Line Plots" class="example-img">
-                            <p><strong>Depth-Transposed Lines</strong><br>Time-depth profiles</p>
-                        </div>
-                        <div class="example-card">
-                            <img src="images/overlay_example.webp" alt="Overlay" class="example-img">
-                            <p><strong>Salinity + SSH</strong><br>Combined dynamics</p>
+                            <p><strong>Depth-Transposed Lines</strong><br>Temporal trends & variability</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Real image (hidden until loaded) -->
+            <!-- DUAL VIEW (side-by-side images) -->
+            <div id="dual-view" style="display:none;">
+                <img id="current-slide-1" src="" alt="Slide 1" class="dual-img">
+                <img id="current-slide-2" src="" alt="Slide 2" class="dual-img">
+            </div>
+
+            <!-- SINGLE IMAGE (fallback) -->
             <img id="current-slide" src="" alt="Current slide" style="display:none;">
         </main>
     </div>

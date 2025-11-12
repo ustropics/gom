@@ -2,10 +2,10 @@
   "2024": {
     "Sea Surface Heights": "ssh_2024.json",
     "Depth-Averaged Salin Transport": "salin_transport_2024.json",
-    "Depth-Averaged Salin (bands with xsec)": "salin_combined_2024.json",
     "Depth-Averaged Salin (bands)": "salin_transport_bands_2024.json",
     "Depth-Averaged Salin (cross-sections)": "salin_transport_line_2024.json",
-    "Depth-Averaged Temperature": "temperature_2024.json",
-    "Salin Cross-Sections (4-panel)": "salinity_transport_vertical_4panel_2024.json"
+    "Temperature (Depth-Averaged)": "temperature_2024.json",
+    "Salin Cross-Sections (4-panel)": "salinity_transport_vertical_4panel_2024.json",
+    "Mixed Layer Depth": "mld_2024.json"
   }
 }
