@@ -15,7 +15,7 @@
     "Salinity Transport Cross-sections (transposed)": "salin_transport_line_2023.json",
     "Salinity Transport Cross-sections (4-panel)": "salin_transport_vertical_4panel_2023.json",
     "Temperature (depth-averaged)": "temperature_2023.json",
-    "Temperature Cross-sections (4-panel)": "temp_transport_vertical_4panel_2023.json",
+    "Temperature Cross-sections (4-panel)": "temperature_transport_vertical_4panel_2023.json",
     "Mixed Layer Depth": "mld_2023.json"
   }
 }
