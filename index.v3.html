@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>300+ Image Player</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+
+        <!-- Navbar -->
+        <header id="navbar">
+            <div id="controls">
+                <!-- LEFT: Player Controls -->
+                <button id="play-pause">Play</button>
+                <button id="prev">Prev</button>
+                <button id="next">Next</button>
+
+                <label class="speed-control">
+                    Speed:
+                    <input type="range" id="speed" min="0.1" max="5" step="0.1" value="1">
+                    <span id="speed-value">1x</span>
+                </label>
+                <label class="loop-control">
+                    Loop <input type="checkbox" id="loop" checked>
+                </label>
+
+                <!-- Counter -->
+                <div id="counter">
+                    <span id="current-num">0</span> / <span id="image-count">0</span>
+                </div>
+
+                <!-- RIGHT: Dynamic Filters + About -->
+                <div id="right-controls">
+                    <select id="year-filter">
+                        <option value="">Select Year</option>
+                    </select>
+                    <select id="product-filter" disabled>
+                        <option value="">Select Product</option>
+                    </select>
+                    <button id="about-btn" title="About">i</button>
+                </div>
+            </div>
+
+            <!-- Interactive Progress -->
+            <div id="progress-wrapper">
+                <input type="range" id="progress-slider" min="0" max="0" value="0" step="1">
+                <div id="progress-track">
+                    <div id="progress-fill"></div>
+                    <div id="progress-thumb"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Image -->
+        <main id="main-container">
+            <img id="current-slide" src="" alt="Current slide">
+        </main>
+    </div>
+
+    <!-- About Panel -->
+    <div id="about-panel">
+        <button id="close-about">X</button>
+        <h2>About This Player</h2>
+        <p><strong>300+ Image Viewer</strong></p>
+        <p>High-performance slideshow with dynamic catalog loading, keyboard navigation, and speed control.</p>
+        <p><strong>Controls:</strong></p>
+        <ul>
+            <li>Right Arrow Next | Left Arrow Prev</li>
+            <li>Space Play / Pause</li>
+            <li>Drag slider to scrub</li>
+        </ul>
+        <p>Data driven by <code>catalog.json</code>.</p>
+    </div>
+
+    <div class="status" id="status">Loading catalog...</div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
